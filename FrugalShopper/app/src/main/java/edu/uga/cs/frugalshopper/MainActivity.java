@@ -1,12 +1,12 @@
 package edu.uga.cs.frugalshopper;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private static final String DEBUG_LOG = "Frugal Shopper";
@@ -59,6 +59,52 @@ public class MainActivity extends AppCompatActivity {
         compare.setOnClickListener(new ButtonClickListener());
     }
 
+    private double[] verify_product_details(EditText productName, EditText weightOfProd,
+                                            EditText amountOfProd,
+                                            String productTag) {
+        double []productDetails = new double[2];
+        String weight, amount;
+        final String incompleteData = "Enter complete details for product ";
+        String product;
+
+        product = productName.getText().toString();
+        weight = weightOfProd.getText().toString();
+        amount = amountOfProd.getText().toString();
+
+        if (product.isEmpty() && (!weight.isEmpty() || !amount.isEmpty())) {
+            Toast toast = Toast.makeText(getApplicationContext(), incompleteData.concat(productTag),
+                    Toast.LENGTH_SHORT);
+            toast.show();
+            result.setText("");
+            return null;
+        }
+
+        if (!product.isEmpty()) {
+            try {
+                productDetails[0] = Double.parseDouble(weight);
+                productDetails[1] = Double.parseDouble(amount);
+            } catch (NumberFormatException e) {
+                Toast toast = Toast.makeText(getApplicationContext(), incompleteData.concat(productTag),
+                        Toast.LENGTH_SHORT);
+                toast.show();
+                result.setText("");
+                return null;
+            }
+        }
+
+        if (!product.isEmpty()) {
+            if (productDetails[0] <= 0 || productDetails[1] <= 0) {
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Value cannot be less than equal to 0", Toast.LENGTH_SHORT);
+                toast.show();
+                result.setText("");
+                return null;
+            }
+        }
+
+        return productDetails;
+    }
+
     private long convert_amount_to_cents(double amount) {
         return Math.round(amount * 100);
     }
@@ -73,121 +119,48 @@ public class MainActivity extends AppCompatActivity {
     private class ButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            String [] nameOfProducts = new String[] {null, null, null};
             double[] weights = new double[] {0.0, 0.0, 0.0};
             double[] amounts = new double[] {0.0, 0.0, 0.0};
+            double[] weightAndAmt;
 
             // Local variables to help calculate and display correct result
-            String weight, amount;
-            double calculation = Double.MAX_VALUE;
+            //String weight, amount;
+            double minCost = Double.MAX_VALUE;
             String [] productTag = {"A", "B", "C"};
             String productToShow = "";
 
-            // Parsing inputs for text field A
-            nameOfProducts[0] = productNameA.getText().toString();
-            weight = weightOfA.getText().toString();
-            amount = amountOfA.getText().toString();
+            // Extract data for product A
+            weightAndAmt = verify_product_details(productNameA, weightOfA, amountOfA,
+                                                  productTag[0]);
 
-            if (nameOfProducts[0].isEmpty() && (!weight.isEmpty() || !amount.isEmpty())) {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "Enter complete details for product A", Toast.LENGTH_SHORT);
-                toast.show();
-                result.setText("");
+            if (weightAndAmt == null) {
                 return;
             }
 
-            if (!nameOfProducts[0].isEmpty()) {
-                try {
-                    weights[0] = Double.parseDouble(weight);
-                    amounts[0] = Double.parseDouble(amount);
-                } catch (NumberFormatException e) {
-                    Toast toast = Toast.makeText(getApplicationContext(),
-                            "Enter complete details for product A", Toast.LENGTH_SHORT);
-                    toast.show();
-                    result.setText("");
-                    return;
-                }
-            }
+            weights[0] = weightAndAmt[0];
+            amounts[0] = weightAndAmt[1];
 
-            if (!nameOfProducts[0].isEmpty()) {
-                if (weights[0] <= 0 || amounts[0] <= 0) {
-                    Toast toast = Toast.makeText(getApplicationContext(),
-                            "Value cannot be less than equal to 0", Toast.LENGTH_SHORT);
-                    toast.show();
-                    result.setText("");
-                    return;
-                }
-            }
+            // Extract data for product B
+            weightAndAmt = verify_product_details(productNameB, weightOfB, amountOfB,
+                    productTag[1]);
 
-            nameOfProducts[1] = productNameB.getText().toString();
-            weight = weightOfB.getText().toString();
-            amount = amountOfB.getText().toString();
-
-            if (nameOfProducts[1].isEmpty() && (!weight.isEmpty() || !amount.isEmpty())) {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "Enter complete details for product B", Toast.LENGTH_SHORT);
-                toast.show();
-                result.setText("");
+            if (weightAndAmt == null) {
                 return;
             }
 
-            if (!nameOfProducts[1].isEmpty()) {
-                try {
-                    weights[1] = Double.parseDouble(weight);
-                    amounts[1] = Double.parseDouble(amount);
-                } catch (NumberFormatException e) {
-                    Toast toast = Toast.makeText(getApplicationContext(),
-                            "Enter complete details for product B", Toast.LENGTH_SHORT);
-                    toast.show();
-                    result.setText("");
-                    return;
-                }
-            }
+            weights[1] = weightAndAmt[0];
+            amounts[1] = weightAndAmt[1];
 
-            if (!nameOfProducts[1].isEmpty()) {
-                if (weights[1] <= 0 || amounts[1] <= 0) {
-                    Toast toast = Toast.makeText(getApplicationContext(),
-                            "Value cannot be less than equal to 0", Toast.LENGTH_SHORT);
-                    toast.show();
-                    result.setText("");
-                    return;
-                }
-            }
+            // Extract data for product C
+            weightAndAmt = verify_product_details(productNameC, weightOfC, amountOfC,
+                    productTag[2]);
 
-            nameOfProducts[2] = productNameC.getText().toString();
-            weight = weightOfC.getText().toString();
-            amount = amountOfC.getText().toString();
-
-            if (nameOfProducts[2].isEmpty() && (!weight.isEmpty() || !amount.isEmpty())) {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "Enter complete details for product C", Toast.LENGTH_SHORT);
-                toast.show();
-                result.setText("");
+            if (weightAndAmt == null) {
                 return;
             }
 
-            if (!nameOfProducts[2].isEmpty()) {
-                try {
-                    weights[2] = Double.parseDouble(weight);
-                    amounts[2] = Double.parseDouble(amount);
-                } catch (NumberFormatException e) {
-                    Toast toast = Toast.makeText(getApplicationContext(),
-                            "Enter complete details for product C", Toast.LENGTH_SHORT);
-                    toast.show();
-                    result.setText("");
-                    return;
-                }
-            }
-
-            if (!nameOfProducts[2].isEmpty()) {
-                if (weights[2] <= 0 || amounts[2] <= 0) {
-                    Toast toast = Toast.makeText(getApplicationContext(),
-                            "Value cannot be less than equal to 0", Toast.LENGTH_SHORT);
-                    toast.show();
-                    result.setText("");
-                    return;
-                }
-            }
+            weights[2] = weightAndAmt[0];
+            amounts[2] = weightAndAmt[1];
 
             for (int i = 0; i < 3; i++) {
                 if (amounts[i] == 0.0 || weights[i] == 0.0) {
@@ -195,13 +168,18 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 double cost = (double)convert_amount_to_cents(amounts[i]) / convert_weight_to_ounce(weights[i]);
-                if (cost < calculation) {
-                    calculation = cost;
+                if (cost < minCost) {
+                    minCost = cost;
                     productToShow = productTag[i];
                 }
             }
 
-            result.setText(bestBuy.concat(productToShow));
+            if (!productToShow.isEmpty()) {
+                result.setText(bestBuy.concat(productToShow));
+            } else {
+                result.setText(productToShow);
+            }
+
             return;
         }
     }
