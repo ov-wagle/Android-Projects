@@ -13,21 +13,21 @@ public class MainActivity extends AppCompatActivity {
     private static final String bestBuy = "Best Buy : ";
 
     // Input Details of A
-    private EditText productNameA;
-    private EditText weightOfA;
+    private EditText weightInLbsA;
+    private EditText weightInOzA;
     private EditText amountOfA;
 
     // Input Details of B
-    private EditText productNameB;
-    private EditText weightOfB;
+    private EditText weightInLbsB;
+    private EditText weightInOzB;
     private EditText amountOfB;
 
     // Input Details of C
-    private EditText productNameC;
-    private EditText weightOfC;
+    private EditText weightInLbsC;
+    private EditText weightInOzC;
     private EditText amountOfC;
 
-    // Compare Button
+    // Compare Button and display result
     private Button compare;
     private EditText result;
 
@@ -37,19 +37,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Input of A
-        productNameA = findViewById(R.id.editTextTextPersonName3);
-        weightOfA = findViewById(R.id.editTextNumberDecimal18);
-        amountOfA = findViewById(R.id.editTextNumberDecimal21);
+        amountOfA = findViewById(R.id.editTextNumberDecimal);
+        weightInLbsA = findViewById(R.id.editTextNumberDecimal18);
+        weightInOzA = findViewById(R.id.editTextNumberDecimal21);
 
         // Input of B
-        productNameB = findViewById(R.id.editTextTextPersonName5);
-        weightOfB = findViewById(R.id.editTextNumberDecimal19);
-        amountOfB = findViewById(R.id.editTextNumberDecimal22);
+        amountOfB = findViewById(R.id.editTextNumberDecimal2);
+        weightInLbsB = findViewById(R.id.editTextNumberDecimal19);
+        weightInOzB = findViewById(R.id.editTextNumberDecimal22);
 
         // Input of C
-        productNameC = findViewById(R.id.editTextTextPersonName7);
-        weightOfC = findViewById(R.id.editTextNumberDecimal20);
-        amountOfC = findViewById(R.id.editTextNumberDecimal23);
+        amountOfC = findViewById(R.id.editTextNumberDecimal3);
+        weightInLbsC = findViewById(R.id.editTextNumberDecimal20);
+        weightInOzC = findViewById(R.id.editTextNumberDecimal23);
 
         // Comparing the inputs
         compare = findViewById(R.id.button);
@@ -59,19 +59,22 @@ public class MainActivity extends AppCompatActivity {
         compare.setOnClickListener(new ButtonClickListener());
     }
 
-    private double[] verify_product_details(EditText productName, EditText weightOfProd,
+    private double[] verify_product_details(EditText weightInLbs, EditText weightInOz,
                                             EditText amountOfProd,
                                             String productTag) {
-        double []productDetails = new double[2];
-        String weight, amount;
-        final String incompleteData = "Enter complete details for product ";
-        String product;
+        double []productDetails = new double[]{0.0, 0.0};
+        String pounds, ounces, amount;
+        int poundsInNum = 0, ounceInNum = 0;
+        final String incompleteData = "Enter either pounds or ounces for product ";
+        final String noPriceEntered = "Price must be entered for product ";
 
-        product = productName.getText().toString();
-        weight = weightOfProd.getText().toString();
+        pounds = weightInLbs.getText().toString();
+        ounces = weightInOz.getText().toString();
         amount = amountOfProd.getText().toString();
 
-        if (product.isEmpty() && (!weight.isEmpty() || !amount.isEmpty())) {
+        // If price is provided for a product and both the weight fields are empty, display a
+        // toast message
+        if (!amount.isEmpty() && pounds.isEmpty() && ounces.isEmpty()) {
             Toast toast = Toast.makeText(getApplicationContext(), incompleteData.concat(productTag),
                     Toast.LENGTH_SHORT);
             toast.show();
@@ -79,29 +82,47 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
 
-        if (!product.isEmpty()) {
+        // Assign the price field to the index 0. If either pound or ounce is empty, assign 0 to it
+        if (!amount.isEmpty()) {
+            productDetails[0] = Double.parseDouble(amount);
+
             try {
-                productDetails[0] = Double.parseDouble(weight);
-                productDetails[1] = Double.parseDouble(amount);
+                poundsInNum = Integer.parseInt(pounds);
             } catch (NumberFormatException e) {
-                Toast toast = Toast.makeText(getApplicationContext(), incompleteData.concat(productTag),
-                        Toast.LENGTH_SHORT);
-                toast.show();
-                result.setText("");
-                return null;
+                poundsInNum = 0;
+            }
+
+            try {
+                ounceInNum = Integer.parseInt(ounces);
+            } catch (NumberFormatException e) {
+                ounceInNum = 0;
             }
         }
 
-        if (!product.isEmpty()) {
-            if (productDetails[0] <= 0 || productDetails[1] <= 0) {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "Value cannot be less than equal to 0", Toast.LENGTH_SHORT);
-                toast.show();
-                result.setText("");
-                return null;
-            }
+        // If amount is empty and either of the weight fields is filled, reject this input as
+        // price is a mandatory field and display a toast message indicating the same
+        if (amount.isEmpty() && (!pounds.isEmpty() || !ounces.isEmpty())) {
+            Toast toast = Toast.makeText(getApplicationContext(), noPriceEntered.concat(productTag),
+                    Toast.LENGTH_SHORT);
+            toast.show();
+            result.setText("");
+            return null;
         }
 
+        // convert weight in pounds to ounces and add with the weight in ounce
+        productDetails[1] = convert_weight_to_ounce(poundsInNum) + ounceInNum;
+
+        // If price is non zero and final weight is 0, this indicates that both the entries in
+        // pounds and ounce were zero which is invalid. This is indicated using a toast message
+        if (productDetails[0] != 0.0 && productDetails[1] == 0.0) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Either pounds or ounces must be non zero", Toast.LENGTH_SHORT);
+            toast.show();
+            result.setText("");
+            return null;
+        }
+
+        // The final array contains the amount of the product and the total weight of product in Oz.
         return productDetails;
     }
 
@@ -109,78 +130,74 @@ public class MainActivity extends AppCompatActivity {
         return Math.round(amount * 100);
     }
 
-    private long convert_weight_to_ounce(double weight) {
-        int pounds = (int)weight;
-        double ounce = weight - pounds;
-
-        return (pounds * 16) + Math.round(16 * ounce);
+    private int convert_weight_to_ounce(int weight) {
+        return weight * 16;
     }
     
     private class ButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+            // Weight and amounts array is initialized to a size of 3 with all zeros.
+            // Each index in these 2 arrays represent total weight and amount of product A,
+            // B and C respectively
             double[] weights = new double[] {0.0, 0.0, 0.0};
             double[] amounts = new double[] {0.0, 0.0, 0.0};
-            double[] weightAndAmt;
+            double[] priceAndWt;
 
             // Local variables to help calculate and display correct result
-            //String weight, amount;
             double minCost = Double.MAX_VALUE;
-            String [] productTag = {"A", "B", "C"};
+            String[] productTag = {"A", "B", "C"};
             String productToShow = "";
 
             // Extract data for product A
-            weightAndAmt = verify_product_details(productNameA, weightOfA, amountOfA,
+            priceAndWt = verify_product_details(weightInLbsA, weightInOzA, amountOfA,
                                                   productTag[0]);
 
-            if (weightAndAmt == null) {
+            if (priceAndWt == null) {
                 return;
             }
-
-            weights[0] = weightAndAmt[0];
-            amounts[0] = weightAndAmt[1];
+            amounts[0] = priceAndWt[0];
+            weights[0] = priceAndWt[1];
 
             // Extract data for product B
-            weightAndAmt = verify_product_details(productNameB, weightOfB, amountOfB,
+            priceAndWt = verify_product_details(weightInLbsB, weightInOzB, amountOfB,
                     productTag[1]);
 
-            if (weightAndAmt == null) {
+            if (priceAndWt == null) {
                 return;
             }
-
-            weights[1] = weightAndAmt[0];
-            amounts[1] = weightAndAmt[1];
+            amounts[1] = priceAndWt[0];
+            weights[1] = priceAndWt[1];
 
             // Extract data for product C
-            weightAndAmt = verify_product_details(productNameC, weightOfC, amountOfC,
+            priceAndWt = verify_product_details(weightInLbsC, weightInOzC, amountOfC,
                     productTag[2]);
 
-            if (weightAndAmt == null) {
+            if (priceAndWt == null) {
                 return;
             }
-
-            weights[2] = weightAndAmt[0];
-            amounts[2] = weightAndAmt[1];
+            amounts[2] = priceAndWt[0];
+            weights[2] = priceAndWt[1];
 
             for (int i = 0; i < 3; i++) {
-                if (amounts[i] == 0.0 || weights[i] == 0.0) {
+                if (amounts[i] == 0 || weights[i] == 0) {
                     continue;
                 }
 
-                double cost = (double)convert_amount_to_cents(amounts[i]) / convert_weight_to_ounce(weights[i]);
+                double cost = (double)convert_amount_to_cents(amounts[i]) / weights[i];
                 if (cost < minCost) {
                     minCost = cost;
                     productToShow = productTag[i];
                 }
             }
 
+            // If productToShow is non empty, this indicates that at least one field was entered.
+            // Else compare button was pressed when all the fields were empty
             if (!productToShow.isEmpty()) {
                 result.setText(bestBuy.concat(productToShow));
             } else {
                 result.setText(productToShow);
             }
-
-            return;
         }
     }
 }
