@@ -8,8 +8,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * The MainActivity is new activity created extending the AppCompatActivity in Android
+ * This class retrieves all the details for product A, B and C, verifies if all the details are
+ * provided correctly and accordingly either display a toast message if it finds any errors in the
+ * input data or calculate the price to weight ratio and determine the best buy based on the lowest
+ * value of price to weight ratio.
+ **/
 public class MainActivity extends AppCompatActivity {
-    private static final String DEBUG_LOG = "Frugal Shopper";
     private static final String bestBuy = "Best Buy : ";
 
     // Input Details of A
@@ -31,6 +37,14 @@ public class MainActivity extends AppCompatActivity {
     private Button compare;
     private EditText result;
 
+    /**
+    * This method is an overridden method over the android's onCreate
+    * It calls the android's onCreate method and then loads the design stored in activity_main.xml
+    * The method is use to retrieve the values entered in the nine blocks in total on the screen.
+    * Once all the values are assigned to their respective instances, it sets the callback to be invoked
+    * when the button press would happen, using new ButtonClickListener().
+    * @param  savedInstanceState Provides the saved state of the application to the onCreate() method
+    **/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +73,20 @@ public class MainActivity extends AppCompatActivity {
         compare.setOnClickListener(new ButtonClickListener());
     }
 
+    /**
+     * This method is used to verify details entered for each product A, B and C.
+     * The method verifies the condition wherein the price is entered and no weight details are entered,
+     * a proper error message is displayed as toast or if only weights are entered and no price is
+     * mentioned, it errors out. It also handles the condition where price is entered and either of
+     * the weights are entered, in such case, the other weight category is initialised to 0.
+     * If both the weights or price is entered as 0, a proper toast message is displayed.
+     * @param  weightInLbs  Details carrying weight in lbs for a product
+     * @param  weightInOz   Details carrying weight in oz for a product
+     * @param  amountOfProd Details carrying price of the product
+     * @param  productTag   String carrying what product's details are passed in other arguments.
+     * @return              Returns the array containing the amount of the product in index 0 and
+     *                      total weight of the product in ounces in index 1.
+     **/
     private double[] verify_product_details(EditText weightInLbs, EditText weightInOz,
                                             EditText amountOfProd,
                                             String productTag) {
@@ -126,14 +154,33 @@ public class MainActivity extends AppCompatActivity {
         return productDetails;
     }
 
+    /**
+     * This method converts the amount to its cents equivalent rounding to the nearest value.
+     * @param  amount  Amount in dollars and cents
+     * @return         Returns the equivalent value of the amount entered to its nearest cents.
+     **/
     private long convert_amount_to_cents(double amount) {
         return Math.round(amount * 100);
     }
 
+    /**
+     * This method converts pounds to ounces.
+     * @param  weight  weight in lbs
+     * @return         Returns the ounces
+     **/
     private int convert_weight_to_ounce(int weight) {
         return weight * 16;
     }
-    
+
+    /**
+     * This class is provided as a callback class which is invoked every time the compare button is
+     * pressed.
+     * The class implements a method onClick() which is overridden
+     * The class calls verify_product_details() method in order to verify the details of the product
+     * entered by the user.
+     * If verify_product_details() returns null, we return else we calculate the amount to weight
+     * ratio. Based on which product has the minimum ratio, we displayed that product as best buy.
+     **/
     private class ButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -180,8 +227,16 @@ public class MainActivity extends AppCompatActivity {
             weights[2] = priceAndWt[1];
 
             for (int i = 0; i < 3; i++) {
-                if (amounts[i] == 0 || weights[i] == 0) {
+                if (weights[i] == 0) {
                     continue;
+                }
+
+                if (amounts[i] == 0) {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "Price cannot be zero", Toast.LENGTH_SHORT);
+                    toast.show();
+                    result.setText("");
+                    return;
                 }
 
                 double cost = (double)convert_amount_to_cents(amounts[i]) / weights[i];
