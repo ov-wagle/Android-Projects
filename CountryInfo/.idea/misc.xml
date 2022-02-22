@@ -4,8 +4,16 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/australia_details.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/australia_overview.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/brazil_details.xml" value="0.19010416666666666" />
+        <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/brazil_overview.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/egypt_details.xml" value="0.19010416666666666" />
+        <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/egypt_overview.xml" value="0.19010416666666666" />
+        <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/france_details.xml" value="0.19010416666666666" />
+        <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/france_overview.xml" value="0.19010416666666666" />
         <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/india.xml" value="0.19010416666666666" />
+        <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/india_details.xml" value="0.18" />
         <entry key="..\:/Users/ovwag/AndroidStudioProjects/CountryInfo/app/src/main/res/layout/india_overview.xml" value="0.25" />
       </map>
     </option>

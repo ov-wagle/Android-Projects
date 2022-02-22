@@ -23,7 +23,8 @@
         android:layout_marginBottom="25dp"
         android:entries="@array/country_name"
         android:prompt="@string/select_countries"
-        android:spinnerMode="dropdown" />
+        android:spinnerMode="dropdown"
+        tools:prompt="Select a country" />
 
     <Button
         android:id="@+id/button"
