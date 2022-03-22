@@ -1,0 +1,1 @@
+The app displays details of 5 countries containing some basic information about the country like its population, its area, its capital city and also about the places to visit in that country, conversion rate between US dollars and the currency of that country, suitable transportation, cost to visit, hotels to stay.
